@@ -1,0 +1,49 @@
+name: Kaggle Competition Notifier
+
+on:
+  schedule:
+    - cron: '0 9 * * *'   # Daily at UTC 09:00 (JST 18:00)
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Setup Kaggle credentials
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+        run: |
+          mkdir -p ~/.kaggle
+          echo "{\"username\":\"${KAGGLE_USERNAME}\",\"key\":\"${KAGGLE_KEY}\"}" > ~/.kaggle/kaggle.json
+          chmod 600 ~/.kaggle/kaggle.json
+
+      - name: Restore sent history
+        uses: actions/cache/restore@v4
+        with:
+          path: sent_competitions.json
+          key: sent-competitions-${{ github.run_id }}
+          restore-keys: sent-competitions-
+
+      - name: Copy config
+        run: |
+          if [ ! -f config.json ]; then
+            cp config.json.example config.json
+          fi
+
+      - name: Run notifier
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: uv run python main.py
+
+      - name: Save sent history
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: sent_competitions.json
+          key: sent-competitions-${{ github.run_id }}

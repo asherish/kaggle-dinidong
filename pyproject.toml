@@ -1,0 +1,18 @@
+[project]
+name = "kaggle-dingdong"
+version = "0.1.0"
+description = "Automatic Kaggle competition notifier for Discord"
+requires-python = ">=3.13"
+dependencies = [
+    "kaggle",
+    "httpx",
+    "python-dotenv",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

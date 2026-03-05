@@ -1,0 +1,14 @@
+{
+  "filters": {
+    "tags": ["tabular"],
+    "categories": ["Featured", "Research"],
+    "exclude_tags": [],
+    "min_reward": null
+  },
+  "kaggle": {
+    "pages": 3
+  },
+  "discord": {
+    "mention_role_id": null
+  }
+}
