@@ -39,7 +39,12 @@ def send_slack(competitions: list[dict], webhook_url: str) -> None:
         chunk = competitions[i : i + _CHUNK_SIZE]
         payload = json.dumps({"blocks": build_slack_blocks(chunk)}).encode()
         req = urllib.request.Request(
-            webhook_url, data=payload, headers={"Content-Type": "application/json"}
+            webhook_url,
+            data=payload,
+            headers={
+                "Content-Type": "application/json",
+                "User-Agent": "KaggleDingDong/1.0",
+            },
         )
         with urllib.request.urlopen(req, timeout=30):
             pass
