@@ -1,6 +1,6 @@
 {
   "filters": {
-    "category": ["Featured", "Research"],
+    "category": ["Featured"],
     "tags": []
   },
   "max_pages": 3,
