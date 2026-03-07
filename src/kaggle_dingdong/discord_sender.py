@@ -18,6 +18,7 @@ def build_discord_embeds(competitions: list[dict]) -> list[dict]:
 
 def send_discord(competitions: list[dict], webhook_url: str) -> None:
     """Send competition notifications to Discord via Webhook (max 10 embeds per message)."""
+    webhook_url = webhook_url.replace("https://discordapp.com/", "https://discord.com/")
     for i in range(0, len(competitions), 10):
         chunk = competitions[i : i + 10]
         payload = json.dumps(
