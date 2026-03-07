@@ -1,20 +1,22 @@
-from kaggle.api.kaggle_api_extended import KaggleApi
-
-
 def fetch_competitions(max_pages: int = 3) -> list[dict]:
     """Fetch competitions from the Kaggle API."""
+    from kaggle.api.kaggle_api_extended import KaggleApi
+
     api = KaggleApi()
     api.authenticate()
 
     competitions = []
     for page in range(1, max_pages + 1):
-        page_comps = api.competitions_list(page=page)
+        response = api.competitions_list(page=page)
+        if response is None:
+            break
+        page_comps = response.competitions
         if not page_comps:
             break
         for c in page_comps:
             competitions.append({
                 "title": c.title,
-                "url": f"https://www.kaggle.com/competitions/{c.ref}",
+                "url": c.url or f"https://www.kaggle.com/competitions/{c.ref}",
                 "category": c.category,
                 "reward": c.reward,
                 "deadline": str(c.deadline),
