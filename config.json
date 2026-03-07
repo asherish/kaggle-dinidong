@@ -1,0 +1,8 @@
+{
+  "filters": {
+    "category": ["Featured", "Research"],
+    "tags": []
+  },
+  "max_pages": 3,
+  "history_limit": 200
+}
