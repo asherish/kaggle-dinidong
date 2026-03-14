@@ -1,27 +1,40 @@
 def fetch_competitions(max_pages: int = 3) -> list[dict]:
-    """Fetch competitions from the Kaggle API."""
+    """Fetch competitions from the Kaggle API.
+
+    Fetches with both default and 'recentlyCreated' sort orders to ensure
+    newly launched competitions are not missed.
+    """
     from kaggle.api.kaggle_api_extended import KaggleApi
 
     api = KaggleApi()
     api.authenticate()
 
-    competitions = []
-    for page in range(1, max_pages + 1):
-        response = api.competitions_list(page=page)
-        if response is None:
-            break
-        page_comps = response.competitions
-        if not page_comps:
-            break
-        for c in page_comps:
-            competitions.append({
-                "title": c.title,
-                "url": c.url or f"https://www.kaggle.com/competitions/{c.ref}",
-                "category": c.category,
-                "reward": c.reward,
-                "deadline": str(c.deadline),
-                "tags": [t.name for t in (c.tags or [])],
-            })
+    seen_titles: set[str] = set()
+    competitions: list[dict] = []
+
+    for sort_by in ["", "recentlyCreated"]:
+        for page in range(1, max_pages + 1):
+            kwargs: dict = {"page": page}
+            if sort_by:
+                kwargs["sort_by"] = sort_by
+            response = api.competitions_list(**kwargs)
+            if response is None:
+                break
+            page_comps = response.competitions
+            if not page_comps:
+                break
+            for c in page_comps:
+                if c.title in seen_titles:
+                    continue
+                seen_titles.add(c.title)
+                competitions.append({
+                    "title": c.title,
+                    "url": c.url or f"https://www.kaggle.com/competitions/{c.ref}",
+                    "category": c.category,
+                    "reward": c.reward,
+                    "deadline": str(c.deadline),
+                    "tags": [t.name for t in (c.tags or [])],
+                })
     return competitions
 
 
