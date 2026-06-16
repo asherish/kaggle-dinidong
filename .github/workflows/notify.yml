@@ -46,3 +46,12 @@ jobs:
         with:
           path: sent_competitions.json
           key: sent-competitions-${{ github.run_id }}
+
+  # Prevent GitHub from auto-disabling this scheduled workflow after 60 days of inactivity
+  keepalive:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - uses: liskin/gh-workflow-keepalive@f72ff1a1336129f29bf0166c0fd0ca6cf1bcb38c # v1.2.1
